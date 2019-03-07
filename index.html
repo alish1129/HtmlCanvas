@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+</head>
+<style>
+@import url('https://fonts.googleapis.com/css?family=Sniglet');
+
+  html, body {
+    margin: 0;
+    font-family: Sniglet;
+  }
+  
+  .horizontal-option {
+    width: 100%;
+    text-align: center;
+    letter-spacing: 5px;
+  }
+  
+  input.brushSize{
+    display: inline-block;
+    width: 90%;
+  }
+</style>
+<body>
+  <div class="horizontal-option">
+      <h3>Brush Size: <span class="brushValue">10</span> </h3>
+      10<input class="brushSize" type='range' min='10' max='200' value='10'>200
+  </div>
+  <canvas id="draw" width="800" height="800"></canvas>
+  
+  <script>
+  const brush = document.querySelector('.brushSize')
+  const brushSizeLabel = document.querySelector('.brushValue');
+  let brushSize = 10;
+  
+  console.dir(brushSize);
+  const canvas = document.querySelector('#draw');
+  const ctx = canvas.getContext('2d');
+  
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const body = document.getElementsByTagName('body');
+  brush.addEventListener('change', () => {
+    brushSize = brush.value;
+    ctx.lineWidth = brushSize;
+    brushSizeLabel.innerText = brushSize;
+  });
+  
+  ctx.strokeStyle = '#BADA55';
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  
+  let isDrawing = false;
+  let lastX = 0;
+  let lastY = 0;
+  let hue = 0;
+  
+  function draw(e) {
+    if(!isDrawing) return;
+    ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(e.offsetX, e.offsetY);
+    ctx.stroke();
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+    hue++;
+    
+    if(hue >= 360) {
+      hue = 0;
+    }
+  }
+    canvas.addEventListener('mousedown', (e) => {
+      isDrawing = true;
+      [lastX, lastY] = [e.offsetX, e.offsetY];
+    });
+
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', () => isDrawing = false);
+  canvas.addEventListener('mouseout', () => isDrawing = false);
+
+  </script>
+</body>
+</html>
